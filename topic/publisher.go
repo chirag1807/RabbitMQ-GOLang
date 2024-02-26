@@ -37,6 +37,27 @@ func PublishMessage() {
 		return
 	}
 
+	q, err := ch.QueueDeclare(
+		"test_topic",
+		true,  // durable
+		false, // delete when unused
+		false,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		failOnError(err, "Failed to declare a queue")
+		return
+	}
+
+	err = ch.QueueBind(q.Name,
+		"*.info", //another example's binding id : abc.# or #.id or *.xyz.* or *.xyz.id
+		"logs_topic", false, nil)
+	if err != nil {
+		failOnError(err, "Failed to bind a queue")
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

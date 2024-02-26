@@ -21,50 +21,50 @@ func main() {
 	}
 	defer ch.Close()
 
-	err = ch.ExchangeDeclare(
-		"logs_topic", // name
-		"topic",      // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // no-wait
-		nil,          // arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
+	// err = ch.ExchangeDeclare(
+	// 	"logs_topic", // name
+	// 	"topic",      // type
+	// 	true,         // durable
+	// 	false,        // auto-deleted
+	// 	false,        // internal
+	// 	false,        // no-wait
+	// 	nil,          // arguments
+	// )
+	// failOnError(err, "Failed to declare an exchange")
 
-	q, err := ch.QueueDeclare(
-		"",
-		true,  // durable
-		false, // delete when unused
-		true,  // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
-	if err != nil {
-		failOnError(err, "Failed to declare a queue")
-		return
-	}
+	// q, err := ch.QueueDeclare(
+	// 	"",
+	// 	true,  // durable
+	// 	false, // delete when unused
+	// 	true,  // exclusive
+	// 	false, // no-wait
+	// 	nil,   // arguments
+	// )
+	// if err != nil {
+	// 	failOnError(err, "Failed to declare a queue")
+	// 	return
+	// }
 
-	err = ch.QueueBind(
-		q.Name,
-		"*.info", //another example's binding id : abc.# or #.id or *.xyz.* or *.xyz.id
-		"logs_direct",
-		false,
-		nil,
-	)
-	if err != nil {
-		failOnError(err, "Failed to Bind a Queue")
-		return
-	}
+	// err = ch.QueueBind(
+	// 	q.Name,
+	// 	"*.info", //another example's binding id : abc.# or #.id or *.xyz.* or *.xyz.id
+	// 	"logs_topic",
+	// 	false,
+	// 	nil,
+	// )
+	// if err != nil {
+	// 	failOnError(err, "Failed to Bind a Queue")
+	// 	return
+	// }
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		"test_topic", // queue
+		"",           // consumer
+		true,         // auto-ack
+		false,        // exclusive
+		false,        // no-local
+		false,        // no-wait
+		nil,          // args
 	)
 	if err != nil {
 		failOnError(err, "Failed to register a consumer")
@@ -79,6 +79,6 @@ func main() {
 		}
 	}()
 
-	fmt.Println(" [*] Waiting for messages. To exit press CTRL+C")
+	fmt.Println("[*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 }
