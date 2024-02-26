@@ -6,7 +6,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func main() {
+func ReceiveMessage() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		failOnError(err, "Failed to connect to RabbitMQ.")
@@ -21,44 +21,44 @@ func main() {
 	}
 	defer ch.Close()
 
-	err = ch.ExchangeDeclare(
-		"logs_direct", // name
-		"direct",      // type
-		true,          // durable
-		false,         // auto-deleted
-		false,         // internal
-		false,         // no-wait
-		nil,           // arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
+	// err = ch.ExchangeDeclare(
+	// 	"logs_direct", // name
+	// 	"direct",      // type
+	// 	true,          // durable
+	// 	false,         // auto-deleted
+	// 	false,         // internal
+	// 	false,         // no-wait
+	// 	nil,           // arguments
+	// )
+	// failOnError(err, "Failed to declare an exchange")
 
-	q, err := ch.QueueDeclare(
-		"",
-		true,  // durable
-		false, // delete when unused
-		true,  // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
-	if err != nil {
-		failOnError(err, "Failed to declare a queue")
-		return
-	}
+	// q, err := ch.QueueDeclare(
+	// 	"test",
+	// 	false, // durable
+	// 	false, // delete when unused
+	// 	true,  // exclusive
+	// 	false, // no-wait
+	// 	nil,   // arguments
+	// )
+	// if err != nil {
+	// 	failOnError(err, "Failed to declare a queue")
+	// 	return
+	// }
 
-	err = ch.QueueBind(
-		q.Name,
-		"info",
-		"logs_direct",
-		false,
-		nil,
-	)
-	if err != nil {
-		failOnError(err, "Failed to Bind a Queue")
-		return
-	}
+	// err = ch.QueueBind(
+	// 	"test",
+	// 	"info",
+	// 	"logs_direct",
+	// 	false,
+	// 	nil,
+	// )
+	// if err != nil {
+	// 	failOnError(err, "Failed to Bind a Queue")
+	// 	return
+	// }
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
+		"test", // queue
 		"",     // consumer
 		true,   // auto-ack
 		false,  // exclusive
@@ -66,6 +66,7 @@ func main() {
 		false,  // no-wait
 		nil,    // args
 	)
+	
 	if err != nil {
 		failOnError(err, "Failed to register a consumer")
 		return

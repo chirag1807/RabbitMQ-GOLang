@@ -37,15 +37,34 @@ func PublishMessage() {
 		return
 	}
 
+	q, err := ch.QueueDeclare(
+		"test",
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		failOnError(err, "Failed to declare a queue")
+		return
+	}
+
+	err = ch.QueueBind(q.Name, "info", "logs_direct", false, nil)
+	if err != nil {
+		failOnError(err, "Failed to bind a queue")
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	body := "Hello World!"
 	err = ch.PublishWithContext(ctx,
 		"logs_direct", //exchange name
-		"info",     //routing key
-		false,  // mandatory
-		false,  // immediate
+		"info",        //routing key
+		false,         // mandatory
+		false,         // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(body),
@@ -54,6 +73,7 @@ func PublishMessage() {
 		failOnError(err, "Failed to publish a message.")
 		return
 	}
+
 	fmt.Println("Message Published:", body)
 }
 
